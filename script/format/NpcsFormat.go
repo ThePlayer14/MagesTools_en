@@ -23,7 +23,7 @@ func (f *Npcs) stringToBytes(str string) []byte {
 		if index, has := f.encodeCharset[string(char)]; has {
 			data.Write(utils.Uint16ToBytesBig(index))
 		} else {
-			panic("不存在的字符：" + string(char))
+			panic("Characters that do not exist:" + string(char))
 		}
 	}
 	return data.Bytes()
@@ -165,7 +165,7 @@ func (f *Npcs) DecodeLine(data []byte) string {
 				}
 			} else {
 				if utils.ShowWarning && data[i] > 0x80 {
-					fmt.Printf("Warning: 字库可能缺少 [%02X %02X] 对应的字符！\n", data[i], data[i+1])
+					fmt.Printf("Warning: The font may lack the character corresponding to [%02X %02X]!\n", data[i], data[i+1])
 				}
 				if inName {
 					name += utils.FormatBytes(data[i : i+2])
@@ -206,7 +206,7 @@ func (f *Npcs) EncodeLine(str string) []byte {
 				tempStr = ""
 				inName = false
 			} else {
-				panic("错误的 ]: 结束符号，在：" + str)
+				panic("Wrong ]: end symbol in:" + str)
 			}
 			i += 2
 			i++ //跳过空格
@@ -230,7 +230,7 @@ func (f *Npcs) EncodeLine(str string) []byte {
 			} else if inName {
 
 			} else {
-				panic("错误的 ] 结束符号，在：" + str)
+				panic("Wrong end of ] symbol in:" + str)
 			}
 			i++
 		} else if line[i] == '<' && i+1 < len(line) && line[i+1] == '#' {

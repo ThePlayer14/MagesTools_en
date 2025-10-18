@@ -83,7 +83,7 @@ func (s *Script) Open(filename string, format format.Format) {
 	case "SC3":
 		s.Strings = LoadSc3(data)
 	default:
-		panic("不支持的文件类型！ " + filename)
+		panic("Unsupported file type!" + filename)
 	}
 }
 
@@ -162,7 +162,7 @@ func (s *Script) Read() {
 func (s *Script) SaveStrings(filename string) {
 	strings := s.Strings.GetStrings()
 	if len(strings) == 0 {
-		fmt.Printf("文件 %s 无任何文本，跳过\n", s.Name)
+		fmt.Printf("File %s does not contain any text, skipping\n", s.Name)
 		return
 	}
 	f, _ := os.Create(filename)

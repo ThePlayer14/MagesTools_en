@@ -1,10 +1,9 @@
-# Mages引擎工具集
-从头开始写的Go版，算是对以前的工具进行一次整合和完善，进度会很慢，结构会经常大改  
-目标是完成尽可能通用的Mages工具集，目前仅以脚本为主
+# Mages Engine Toolkit
+English localization of wetor's MagesTools tool.
 
-## 适配游戏
-- 理论支持所有Mages引擎的游戏
-- 所有的MES(msb)、SC3(scx)脚本都可正常导出导入
+## Game Compatibility
+- Theoretically supports all games powered by the Mages engine
+- All MES (msb) and SC3 (scx / scr) scripts can be exported and imported without issues
 
 ## Usage
 ```
@@ -43,10 +42,10 @@
 
 
 ```
-### Example
+### Examples
 
 ```shell
-# 导出文件夹所有，使用tbl码表，格式为NpcsP，不跳过码表中相同字符，开启debug模式为2
+# Export all files in the folder using the tbl code table in NpcsP format. Do not skip identical characters in the code table. Enable debug mode with value 2.
 MagesTools -type=script -export -skip=false -debug=2\
   -format=NpcsP \
   -tbl=./data/CC/MJPN.txt \
@@ -54,7 +53,7 @@ MagesTools -type=script -export -skip=false -debug=2\
   -output=./data/CC/txt
 
 
-# 导出文本，使用tbl码表，格式为NpcsP，跳过码表中相同字符
+# Export text using the tbl code table in NpcsP format, skipping identical characters in the code table.
 MagesTools -type=script -export -skip=true \
   -format=NpcsP \
   -tbl=./data/CC/MJPN.txt \
@@ -62,7 +61,7 @@ MagesTools -type=script -export -skip=true \
   -output=./data/temp/1.msb.txt 
 
   
-# 导入文本，使用tbl码表，格式为NpcsP，跳过码表中相同字符
+# Import text using the tbl code table in NpcsP format, skipping identical characters in the code table.
 MagesTools -type=script -import -skip=false \
   -format=NpcsP \
   -tbl=./data/CC/MJPN.txt \
@@ -70,8 +69,8 @@ MagesTools -type=script -import -skip=false \
   -input=./data/temp/1.msb.txt \
   -output=./data/temp/1.msb.txt.msb
 
-# RNE使用以下参数
-# 导出文本，使用charset码表，格式为Npcs，不跳过码表中相同字符
+# RNE uses the following parameters:
+# Export text using the charset character set in Npcs format, without skipping identical characters in the character set.
 MagesTools -type=script -export -skip=false \
   -format=Npcs \
   -charset=./data/RNE/Charset_PSV_JP.utf8 \
@@ -79,28 +78,35 @@ MagesTools -type=script -export -skip=false \
   -output=./data/temp/1.msb.txt 
 
   
-# 导入文本，使用charset码表，格式为Npcs，不跳过码表中相同字符
+# Import text using the charset character set, formatted as Npcs, without skipping identical characters in the character set.
 MagesTools -type=script -import -skip=false \
   -format=Npcs \
   -charset=./data/RNE/Charset_PSV_JP.utf8 \
   -source=./data/temp/1.msb \
   -input=./data/temp/1.msb.txt \
   -output=./data/temp/1.msb.txt.msb
-  
-# 对比文件
+
+# 11eyes CrossOver Xbox 360 parameters
+# Exporting script (extract to text), no skipping, debug lv 2, format as Npcs
+MagesTools -type=script -export -skip=false -debug=2 -charset ./charset/eleveneyes.utf8 -format=Npcs -source ../magesgame/script -output ../magesgame/scrout
+# Importing script (replacing in the file), no skipping, debug lv 2, format as Npcs
+MagesTools -type=script -import -skip=false -debug=2 -charset=./charset/eleveneyes.utf8 -format=Npcs -source=../magesgame/script/SC000.scr -input=./script-tl/SC000-tl.txt -output=./script-tl/output/SC000-tex.scr
+
+# File comparison
 MagesTools -type=diff \
   -input=./data/temp/1.msb \
   -output=./data/temp/1.msb.txt.msb
 ```
 
 ## Script
-### 格式
-目前的格式为NPCSManager的优化版
-- 删除`name`后的`[1x01][1x02]`，仅用`:[`和`]:`标记name
-- 删除`]:`后的半角空格
-- 保留字节数据均采用`0x`开头，如`[0x04A01414]`
-- 删除`color`的特殊标记`<#`和`#>`，仅用字节标记，如`[0x04A01414][0x00]`
-- 增加对`EvaluateExpression`表达式的简单字节解析，如`[0x15290AA4B51414008100][0x00]`，可能存在未知bug  
+### Format
+The current format is an optimized version of NPCSManager.
+- Delete`name`after`[1x01][1x02]`, using only`:[`value`]:`label name
+- Delete`]:`half-width space
+- All reserved byte data are implemented using`0x`at the beginning, such as`[0x04A01414]`
+- Delete`color`special markings`<#`value`#>`, using only byte markers, such as`[0x04A01414][0x00]`
+- Improve support for`EvaluateExpression`simple byte parsing of expressions, such as`[0x15290AA4B51414008100][0x00]`. There may be unknown bugs.
+Script sample:
 ```
 [0x0F][0x1100CC][0x04A01414][0x00]『白い光が見えた』[0x15290AA4B51414008100][0x00][0x03][0xFF]
 [0x0F][0x110026][0x04A01414][0x00]『耳鳴りのような音が聞こえた』[0x15290AA4B51414008100][0x00][0x08][0xFF]
@@ -119,46 +125,47 @@ MagesTools -type=diff \
 :[大谷]:「……よし」[0x03][0xFF]
 ```
 
-## 计划
-- 支持更多格式
+## Planned features
+- Support more formats
 
-## 更新日志
+## Version history / changelog
 
 ### 2024.6.5
-- 修复表达式结束判断
-- 复无文本的脚本解析问题
-- 修复windows下导出文件夹无写入问题 
-- (以上问题由 [Fluchw](https://github.com/wetor/MagesTools/issues/5) 发现)
+- - Fixed expression termination detection
+- Resolved script parsing issues with empty text
+- Fixed folder export write permission issues on Windows
+- (Issues identified by discoverer [Fluchw](https://github.com/wetor/MagesTools/issues/5))
 
 ### 2022.10.21
-- 修复':'字符后为字节数据（`:[0xFF]`）导致Encode错误的问题 ([kurikomoe](https://github.com/kurikomoe)发现)
+- Fixed an encoding error caused by byte data (`:[0xFF]`) following the ‘:’ character. Identified by discoverer [kurikomoe](https://github.com/kurikomoe).
 
 ### 2022.3.21
-- 支持SC3(scx)脚本的文本导入导出
-- 支持文件夹导出（暂不支持导入）
-- 增加简单的log
-- 优化代码细节
+- Supports importing and exporting text files for SC3 (scx / scr) scripts
+- Supports folder export (import not currently supported)
+- Added basic logging functionality
+- Optimized code details
 
 ### 2022.3.20 2
-- 重构代码结构以支持更多导出格式
-- 支持NPCSManager格式的导出与导入
-  - 支持NPCSManager导出文本的导入
-  - NPCSManager无法导入此程序导出的文本，存在细微差异
-- 支持命令行调用
-- 增加帮助文档
+- Restructured code architecture to support additional export formats
+- Added support for exporting and importing NPCSManager formats
+  - Supports importing NPCSManager export files
+  - Original NPCSManager cannot import files exported by this program due to minor differences
+- Added command-line invocation support
+- Enhanced help documentation
 
 ### 2022.3.20
-- 完成MES(msb)文本导入（简单实现）
-- 调整导出格式
+- Complete MES (MSB) text import (simple implementation)
+- Adjust export format
 
 ### 2022.3.19
-- 基本框架设计
-- 完成MES(msb)的文本导出
+- Basic framework design
+- Completed text export for MES (msb)
 ### 2022.3.18
-- 开始
+- Initial version
 
 
-## 参考依赖
-- [marcussacana](https://github.com/marcussacana) 的 [NPCSManager](https://github.com/marcussacana/NPCSManager)  
-- [liaowm5](https://github.com/SteiensGate) 的 msb_tool.py
-- [CommitteeOfZero](https://github.com/CommitteeOfZero) 的 [sc3ntist](https://github.com/CommitteeOfZero/sc3ntist) 以及 [SciAdv.Net](https://github.com/CommitteeOfZero/SciAdv.Net)
+## Credits 
+This project is made possible due to the efforts of
+- [marcussacana](https://github.com/marcussacana)'s [NPCSManager](https://github.com/marcussacana/NPCSManager)
+- [liaowm5](https://github.com/SteiensGate)'s msb_tool.py
+- [CommitteeOfZero](https://github.com/CommitteeOfZero)'s [sc3ntist](https://github.com/CommitteeOfZero/sc3ntist) and [SciAdv.Net](https://github.com/CommitteeOfZero/SciAdv.Net) projects.

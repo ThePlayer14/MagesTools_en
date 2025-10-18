@@ -67,7 +67,7 @@ func FileSameCheck(file1, file2 string) bool {
 	data1, _ := os.ReadFile(file1)
 	data2, _ := os.ReadFile(file2)
 	if len(data1) != len(data2) {
-		fmt.Printf("文件大小不一致。file1:%d  file2:%d\n", len(data1), len(data2))
+		fmt.Printf("The file sizes are inconsistent. file1:%d  file2:%d\n", len(data1), len(data2))
 		return false
 	}
 	same := true

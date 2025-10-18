@@ -61,7 +61,7 @@ func (s *Sc3) GetStrings() []string {
 
 func (s *Sc3) SetStrings(strings []string) {
 	if s.Count != len(strings) {
-		panic(fmt.Sprintf("导入文本行数不匹配。原脚本：%d，导入：%d", s.Count, len(strings)))
+		panic(fmt.Sprintf("The number of lines of imported text does not match. Original script: %d, imported: %d", s.Count, len(strings)))
 		return
 	}
 	s.Strings = strings

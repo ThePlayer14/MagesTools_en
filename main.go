@@ -60,18 +60,18 @@ License: GPL-3.0
 	switch pType {
 	case "diff":
 		if len(pInput) == 0 && len(pOutput) == 0 {
-			panic("Diff需要input和output")
+			panic("Diff requires input and output")
 		}
 		res := utils.FileSameCheck(pInput, pOutput)
 		if res {
-			fmt.Println("两文件完全相同")
+			fmt.Println("The two files are identical")
 		}
 	case "script":
 		if !pExport && !pImport {
-			panic("必须指定export模式或import模式")
+			panic("You must specify export mode or import mode")
 		}
 		if len(pSource) == 0 {
-			panic("必须指定source源文件或文件夹")
+			panic("The source file or folder must be specified")
 		}
 
 		var _format format.Format
@@ -81,7 +81,7 @@ License: GPL-3.0
 		case "NPCSP":
 			_format = &format.NpcsP{}
 		default:
-			panic("未知脚本导出格式")
+			panic("Unknown script export format")
 		}
 		scr := &script.Script{}
 
@@ -90,7 +90,7 @@ License: GPL-3.0
 		} else if len(pTbl) > 0 {
 			scr.LoadCharset(pTbl, true, pSkipChar)
 		} else {
-			panic("必须指定charset文件或tbl文件")
+			panic("A charset file or a tbl file must be specified")
 		}
 
 		if pExport {
@@ -102,7 +102,7 @@ License: GPL-3.0
 					}
 					scr.Open(file, _format)
 					scr.Read()
-					// 导出
+					// Export
 					scr.SaveStrings(filepath.Join(pOutput, filepath.Base(file)+".txt"))
 				}
 			} else if utils.IsFile(pSource) && utils.IsFile(pOutput) {
@@ -110,7 +110,7 @@ License: GPL-3.0
 				scr.Read()
 				scr.SaveStrings(pOutput)
 			} else {
-				panic("source和output必须同为文件，或同为文件夹")
+				panic("Source and output must be files or folders.")
 			}
 		} else if pImport {
 			scr.Open(pSource, _format)
@@ -118,13 +118,13 @@ License: GPL-3.0
 			if len(pInput) > 0 {
 				scr.LoadStrings(pInput)
 			} else {
-				panic("必须指定input文件")
+				panic("An input file must be specified")
 			}
 
 			if len(pOutput) > 0 {
 				scr.Write(pOutput)
 			} else {
-				panic("必须指定output文件")
+				panic("The output file must be specified")
 			}
 		}
 	}

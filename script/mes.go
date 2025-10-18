@@ -55,7 +55,7 @@ func (m *Mes) GetStrings() []string {
 
 func (m *Mes) SetStrings(strings []string) {
 	if m.Count != len(strings) {
-		panic(fmt.Sprintf("导入文本行数不匹配。原脚本：%d，导入：%d", m.Count, len(strings)))
+		panic(fmt.Sprintf("The number of lines of imported text does not match. Original script: %d, imported: %d", m.Count, len(strings)))
 		return
 	}
 	m.Strings = strings
