@@ -1,5 +1,5 @@
 # Mages Engine Toolkit
-English localization of wetor's MagesTools tool.
+English localization of wetor's MagesTools program.
 
 ## Game Compatibility
 - Theoretically supports all games powered by the Mages engine
@@ -106,6 +106,7 @@ The current format is an optimized version of NPCSManager.
 - All reserved byte data are implemented using`0x`at the beginning, such as`[0x04A01414]`
 - Delete`color`special markings`<#`value`#>`, using only byte markers, such as`[0x04A01414][0x00]`
 - Improve support for`EvaluateExpression`simple byte parsing of expressions, such as`[0x15290AA4B51414008100][0x00]`. There may be unknown bugs.
+
 Script sample:
 ```
 [0x0F][0x1100CC][0x04A01414][0x00]『白い光が見えた』[0x15290AA4B51414008100][0x00][0x03][0xFF]
