@@ -100,11 +100,11 @@ MagesTools -type=diff \
 
 ## Script
 ### Format
-The current format is an optimized version of NPCSManager.
-- Delete`name`after`[1x01][1x02]`, using only`:[`value`]:`label name
+The current format is an optimized version of NPCSManager. (NpcsP format is advised)
+- Delete `[1x01][1x02]` after `name`, using only`:[`value`]:`label name
 - Delete`]:`half-width space
 - All reserved byte data are implemented using`0x`at the beginning, such as`[0x04A01414]`
-- Delete`color`special markings`<#`value`#>`, using only byte markers, such as`[0x04A01414][0x00]`
+- Delete`color`special markings`<#`value`#>`, using only byte markers, such as`[0x04A01414][0x00]` (There might be unknown issues when using `Npcs` format)
 - Improve support for`EvaluateExpression`simple byte parsing of expressions, such as`[0x15290AA4B51414008100][0x00]`. There may be unknown bugs.
 
 Script sample:
