@@ -87,10 +87,10 @@ MagesTools -type=script -import -skip=false \
   -output=./data/temp/1.msb.txt.msb
 
 # 11eyes CrossOver Xbox 360 parameters
-# Exporting script (extract to text), no skipping, debug lv 2, format as Npcs
-MagesTools -type=script -export -skip=false -debug=2 -charset ./charset/eleveneyes.utf8 -format=Npcs -source ../magesgame/script -output ../magesgame/scrout
-# Importing script (replacing in the file), no skipping, debug lv 2, format as Npcs
-MagesTools -type=script -import -skip=false -debug=2 -charset=./charset/eleveneyes.utf8 -format=Npcs -source=../magesgame/script/SC000.scr -input=./script-tl/SC000-tl.txt -output=./script-tl/output/SC000-tex.scr
+# Exporting script (extract to text), no skipping, debug lv 2, format as NpcsP
+MagesTools -type=script -export -skip=false -debug=2 -charset ./charset/eleveneyes.utf8 -format=NpcsP -source ../magesgame/script -output ../magesgame/scrout
+# Importing script (replacing in the file), no skipping, debug lv 2, format as NpcsP
+MagesTools -type=script -import -skip=false -debug=2 -charset=./charset/eleveneyes.utf8 -format=NpcsP -source=../magesgame/script/SC000.scr -input=./script-tl/SC000-tl.txt -output=./script-tl/output/SC000-tex.scr
 
 # File comparison
 MagesTools -type=diff \
