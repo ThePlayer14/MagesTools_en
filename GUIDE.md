@@ -38,7 +38,12 @@ For that, swap the last three digits in a color code to three zeros. For example
 If the NpcsP formatting used, you won't need to keep the `[0x01]`and `[0x02]` tags, because those only appear when using the Npcs format.
 * Be sure to keep an eye on the Line closing tags' presence in the script. As to which one needs to be used, refer to the original script file. 
 If it's not present will not break the game but will be clumped together with the line after the unclosed line.
-* Sometimes you may encounter tags like `[0x15280AA12C142100]`. These are likely the `EvaluateExpression` kind of tags, and these must always be followed by the `[0x00]` Empty tag, because otherwise the game will get stuck. 
+* Sometimes you may encounter tags like `[0x15280AA12C142100]`. These are likely the `EvaluateExpression` kind of tags, and these must always be followed by the `[0x00]` Empty tag, because otherwise the game will get stuck.
+
+## Handling Ruby text
+* If you'd want to use the Ruby text function, you can simply just reuse the existing structure found within the script. However, if you're planning to use an LLM or an MTL / CAT tool to translate the scripts as a working draft, it is recommened to remove all instances of the Ruby text tags and contents, with the exception of the Ruby text base, and send the result for translation.
+* You can also try using the ruby text itself instead of the character it was used for if the translation didn't turn out well. 
+* If you only see a repeated number of middle dots `·` as ruby text, you can just remove those. 
 
 # Line tags in JSON
 ```
