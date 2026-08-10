@@ -5,6 +5,10 @@ English localization of wetor's MagesTools tool.
 - Theoretically supports all games powered by the Mages engine
 - All MES (msb) and SC3 (scx / scr) scripts can be exported and imported without issues
 
+## Usage guide
+* Refer to [How to use](https://github.com/ThePlayer14/MagesTools_en/blob/master/GUIDE.md)
+
+
 ## Usage
 ```
   -charset string
