@@ -6,6 +6,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"MagesTools/script/format"
 	"MagesTools/script/utils"
@@ -41,11 +43,13 @@ type Strings interface {
 }
 
 type Script struct {
-	Name          string
-	Strings       Strings
-	Format        format.Format
-	DecodeCharset map[uint16]string
-	EncodeCharset map[string]uint16
+	Name           string
+	Strings        Strings
+	Format         format.Format
+	DecodeCharset  map[uint16]string
+	EncodeCharset  map[string]uint16
+	DecodeCompound map[uint16]string
+	EncodeCompound map[string]uint16
 }
 
 // NewScript
@@ -143,6 +147,60 @@ func (s *Script) LoadCharset(filename string, isTBL, skipExist bool) {
 	s.EncodeCharset = encodeCharset
 }
 
+// LoadCompound
+//
+//	Description 载入复合字符表（compound characters）。
+//	            文件格式与 C# 工具 CompoundCharacters.tbl 一致：每行 `[HexCode]=value`，
+//	            或区间 `[HexStart-HexEnd]=value`。例如 `[E000]=あい`。
+//	            载入后，导出会把复合字符包裹为 [value]，导入时 [value] 会编码为单个码值。
+//	Receiver s *Script
+//	Param filename string 文件名
+func (s *Script) LoadCompound(filename string) {
+	f, err := os.Open(filename)
+	defer f.Close()
+	if err != nil {
+		panic(err)
+	}
+	decodeCompound := make(map[uint16]string)
+	encodeCompound := make(map[string]uint16)
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || !strings.Contains(line, "=") {
+			continue
+		}
+		eq := strings.Index(line, "=")
+		left := line[:eq]
+		value := line[eq+1:]
+		left = strings.TrimPrefix(left, "[")
+		left = strings.TrimSuffix(left, "]")
+		if strings.Contains(left, "-") {
+			parts := strings.SplitN(left, "-", 2)
+			start, err1 := strconv.ParseUint(parts[0], 16, 16)
+			end, err2 := strconv.ParseUint(parts[1], 16, 16)
+			if err1 != nil || err2 != nil {
+				continue
+			}
+			for i := start; i <= end; i++ {
+				code := uint16(i)
+				decodeCompound[code] = value
+				encodeCompound[value] = code
+			}
+		} else {
+			code, err := strconv.ParseUint(left, 16, 16)
+			if err != nil {
+				continue
+			}
+			c := uint16(code)
+			decodeCompound[c] = value
+			encodeCompound[value] = c
+		}
+	}
+	s.DecodeCompound = decodeCompound
+	s.EncodeCompound = encodeCompound
+	fmt.Printf("Loaded compound character table: %d entries from %s\n", len(decodeCompound), filename)
+}
+
 // Read
 //
 //	Description 解析文本，需要至少执行一次script.LoadCharset载入码表
@@ -150,6 +208,9 @@ func (s *Script) LoadCharset(filename string, isTBL, skipExist bool) {
 func (s *Script) Read() {
 	if s.DecodeCharset != nil && s.EncodeCharset != nil {
 		s.Format.SetCharset(s.DecodeCharset, s.EncodeCharset)
+	}
+	if s.DecodeCompound != nil && s.EncodeCompound != nil {
+		s.Format.SetCompound(s.DecodeCompound, s.EncodeCompound)
 	}
 	s.Strings.ReadStrings(s.Format.DecodeLine)
 }
