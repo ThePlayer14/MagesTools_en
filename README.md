@@ -188,6 +188,7 @@ Script sample:
 
 ### 2026.6.12
 - Fixed `SetColor` (color tag `0x04`) reading/swallowing too many bytes: it now reads a single color byte instead of three, so the character byte following a color command is no longer absorbed into the color tag (previously truncated/garbled text such as missing leading characters and bracket glyphs).
+- This color fix and the compound character support was added in using OpenCode and the Zen models.
 
 ### 2024.6.5
 - Fixed expression termination detection
