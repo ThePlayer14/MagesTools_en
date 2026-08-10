@@ -1,17 +1,16 @@
 # Mages Engine Toolkit
-English localization of wetor's MagesTools program.
+English localization of wetor's MagesTools tool.
 
 ## Game Compatibility
 - Theoretically supports all games powered by the Mages engine
 - All MES (msb) and SC3 (scx / scr) scripts can be exported and imported without issues
 
-## Usage guide
-* Refer to [How to use](https://github.com/ThePlayer14/MagesTools_en/blob/master/GUIDE.md)
-
 ## Usage
 ```
   -charset string
         [script.optional] Character set containing only text. Must be utf8 encoding. Choose between "charset" and "tbl"
+  -compound string
+        [script.optional] Compound character table file (e.g. CompoundCharacters.tbl). Format: "[HexCode]=value" or "[HexStart-HexEnd]=value". Enables compound character support. When loaded, compound codes are wrapped as [value] on export and written back to a single code on import.
   -debug int
         [optional] Debug level
             0: Disable debug mode
@@ -90,26 +89,75 @@ MagesTools -type=script -import -skip=false \
   -output=./data/temp/1.msb.txt.msb
 
 # 11eyes CrossOver Xbox 360 parameters
-# Exporting script (extract to text), no skipping, debug lv 2, format as NpcsP
-MagesTools -type=script -export -skip=false -debug=2 -charset ./charset/eleveneyes.utf8 -format=NpcsP -source ../magesgame/script -output ../magesgame/scrout
-# Importing script (replacing in the file), no skipping, debug lv 2, format as NpcsP
-MagesTools -type=script -import -skip=false -debug=2 -charset=./charset/eleveneyes.utf8 -format=NpcsP -source=../magesgame/script/SC000.scr -input=./script-tl/SC000-tl.txt -output=./script-tl/output/SC000-tex.scr
+# Exporting script (extract to text), no skipping, debug lv 2, format as Npcs
+MagesTools -type=script -export -skip=false -debug=2 -charset ./charset/eleveneyes.utf8 -format=Npcs -source ../magesgame/script -output ../magesgame/scrout
+# Importing script (replacing in the file), no skipping, debug lv 2, format as Npcs
+MagesTools -type=script -import -skip=false -debug=2 -charset=./charset/eleveneyes.utf8 -format=Npcs -source=../magesgame/script/SC000.scr -input=./script-tl/SC000-tl.txt -output=./script-tl/output/SC000-tex.scr
 
 # File comparison
 MagesTools -type=diff \
   -input=./data/temp/1.msb \
-  -output=./data/temp/1.msb.txt.msb
+  -output=./data/temp/1.msb.txt
 ```
+
+## Compound Characters
+
+Some games use **compound (multi-character) glyphs**: a single character code that maps to several
+characters (for example a combined or decorated glyph). The normal charset/TBL only maps one code to
+one display character, so a compound cannot be re-imported correctly — it would be split into
+individual characters.
+
+Pass a compound table with `-compound` to handle them. The file format matches the C# SciAdv.Net
+tool's `CompoundCharacters.tbl`:
+
+- One entry per line: `[HexCode]=value`
+- A range is also supported: `[HexStart-HexEnd]=value`
+- `HexCode` is the 16-bit character code (e.g. `0xE000`); `value` is the multi-character string it stands for
+
+Example `CompoundCharacters.tbl`:
+
+```
+[E000]=あい
+[E001-E003]=うえお
+```
+
+Behavior:
+
+- **Export:** a code present in the compound table is written wrapped in brackets, e.g. `[あい]`,
+  so it is distinguishable from a literal sequence of those characters.
+- **Import:** a bracket group that is not a raw byte sequence (`[0x..]`) and not a name marker
+  (`:[..]:`) is looked up in the compound table and written back as the single code. Unknown
+  bracket groups fall back to being treated as literal text.
+
+Example:
+
+```shell
+# Export with compound character support
+MagesTools -type=script -export -format=NpcsP \
+  -tbl=./data/CC/MJPN.txt \
+  -compound=./data/CC/CompoundCharacters.tbl \
+  -source=./data/temp/1.msb \
+  -output=./data/temp/1.msb.txt
+
+# Import with compound character support
+MagesTools -type=script -import -format=NpcsP \
+  -tbl=./data/CC/MJPN.txt \
+  -compound=./data/CC/CompoundCharacters.tbl \
+  -source=./data/temp/1.msb \
+  -input=./data/temp/1.msb.txt \
+  -output=./data/temp/1.msb.out.msb
+```
+
+When `-compound` is not supplied, behavior is unchanged.
 
 ## Script
 ### Format
-The current format is an optimized version of NPCSManager. (NpcsP format is advised)
-- Delete `[1x01][1x02]` after `name`, using only`:[`value`]:`label name
-- Delete`]:`half-width space
-- All reserved byte data are implemented using`0x`at the beginning, such as`[0x04A01414]`
-- Delete`color`special markings`<#`value`#>`, using only byte markers, such as`[0x04A01414][0x00]` (There might be unknown issues when using `Npcs` format)
-- Improve support for`EvaluateExpression`simple byte parsing of expressions, such as`[0x15290AA4B51414008100][0x00]`. There may be unknown bugs.
-
+The current format (NpcsP) is an optimized version of the NPCSManager format.
+- Removed the `[1x01][1x02]` name markers; names are now wrapped with `:[` and `]:` (e.g. `:[name]:`).
+- Removed the half-width space that previously followed `]:`.
+- All reserved byte data is written with a `0x` prefix, e.g. `[0x04A01414]`.
+- Removed the `color` markup `<#` ... `#>`; color is now represented by a plain byte marker, e.g. `[0x04A01414][0x00]`.
+- Added basic byte-level parsing of `EvaluateExpression` commands, e.g. `[0x15290AA4B51414008100][0x00]`. Some bugs may still remain.
 Script sample:
 ```
 [0x0F][0x1100CC][0x04A01414][0x00]『白い光が見えた』[0x15290AA4B51414008100][0x00][0x03][0xFF]
@@ -133,6 +181,9 @@ Script sample:
 - Support more formats
 
 ## Version history / changelog
+
+### 2026.6.12
+- Fixed `SetColor` (color tag `0x04`) reading/swallowing too many bytes: it now reads a single color byte instead of three, so the character byte following a color command is no longer absorbed into the color tag (previously truncated/garbled text such as missing leading characters and bracket glyphs).
 
 ### 2024.6.5
 - Fixed expression termination detection

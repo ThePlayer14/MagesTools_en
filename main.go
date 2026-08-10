@@ -15,13 +15,13 @@ import (
 func main() {
 
 	fmt.Print(`MagesTools 
-Version: 0.2.3_2024.06.05
+Version: 0.2.3_2026.06.12
 Author: WéΤοr (wetorx@qq.com)
 Github: https://github.com/wetor/MagesTools
 License: GPL-3.0
 
 `)
-	var pType, pSource, pInput, pOutput, pScriptFormat, pCharset, pTbl string
+	var pType, pSource, pInput, pOutput, pScriptFormat, pCharset, pTbl, pCompound string
 	var pImport, pExport, pSkipChar bool
 	var pDebug int
 	flag.StringVar(&pType, "type", "", `[required] Source file type.
@@ -50,6 +50,7 @@ License: GPL-3.0
 	flag.StringVar(&pTbl, "tbl", "", `[script.optional] Text in TBL format. Must be utf8 encoding. Choose between "charset" and "tbl"`)
 
 	flag.BoolVar(&pSkipChar, "skip", true, "[script.optional] Skip repeated characters in the character table.")
+	flag.StringVar(&pCompound, "compound", "", `[script.optional] Compound character table file (e.g. CompoundCharacters.tbl). Format: "[HexCode]=value" or "[HexStart-HexEnd]=value". Enables compound character support.`)
 
 	flag.Parse()
 	restruct.EnableExprBeta()
@@ -91,6 +92,10 @@ License: GPL-3.0
 			scr.LoadCharset(pTbl, true, pSkipChar)
 		} else {
 			panic("A charset file or a tbl file must be specified")
+		}
+
+		if len(pCompound) > 0 {
+			scr.LoadCompound(pCompound)
 		}
 
 		if pExport {
