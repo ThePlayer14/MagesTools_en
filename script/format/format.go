@@ -33,6 +33,7 @@ const (
 
 type Format interface {
 	SetCharset(decode map[uint16]string, encode map[string]uint16)
+	SetCompound(decode map[uint16]string, encode map[string]uint16)
 	DecodeLine(data []byte) string
 	EncodeLine(str string) []byte
 }

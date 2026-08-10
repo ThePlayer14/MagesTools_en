@@ -9,13 +9,20 @@ import (
 )
 
 type NpcsP struct {
-	decodeCharset map[uint16]string
-	encodeCharset map[string]uint16
+	decodeCharset  map[uint16]string
+	encodeCharset  map[string]uint16
+	decodeCompound map[uint16]string
+	encodeCompound map[string]uint16
 }
 
 func (f *NpcsP) SetCharset(decode map[uint16]string, encode map[string]uint16) {
 	f.decodeCharset = decode
 	f.encodeCharset = encode
+}
+
+func (f *NpcsP) SetCompound(decode map[uint16]string, encode map[string]uint16) {
+	f.decodeCompound = decode
+	f.encodeCompound = encode
 }
 func (f *NpcsP) stringToBytes(str string) []byte {
 	data := bytes.NewBuffer(nil)
@@ -48,8 +55,8 @@ func (f *NpcsP) DecodeLine(data []byte) string {
 			text.WriteString(utils.FormatByte(data[i]))
 			i++
 		case SetColor:
-			text.WriteString(utils.FormatBytes(data[i : i+4]))
-			i += 4
+			text.WriteString(utils.FormatBytes(data[i : i+2]))
+			i += 2
 		case PresentUnknown05:
 			text.WriteString(utils.FormatByte(data[i]))
 			i++
@@ -151,11 +158,13 @@ func (f *NpcsP) DecodeLine(data []byte) string {
 			i++
 		default:
 			index := utils.BytesToUint16Big(data[i : i+2])
-			if char, has := f.decodeCharset[index]; has {
+			if comp, has := f.decodeCompound[index]; has {
+				text.WriteString("[" + comp + "]")
+			} else if char, has := f.decodeCharset[index]; has {
 				text.WriteString(char)
 			} else {
 				if utils.ShowWarning && data[i] >= 0x80 {
-					fmt.Printf("Warning: The font library may lack the character corresponding to [%02X %02X]!\n", data[i], data[i+1])
+					fmt.Printf("Warning: The font library may lack the character corresponding to code point 0x%04X ([%02X %02X])!\n", index, data[i], data[i+1])
 				}
 				text.WriteString(utils.FormatBytes(data[i : i+2]))
 			}
@@ -173,7 +182,9 @@ func (f *NpcsP) EncodeLine(str string) []byte {
 	i := 0
 	inBytes := false
 	inName := false
+	inCompound := false
 	tempStr := ""
+	compStr := ""
 	for i < len(line) {
 		if line[i] == ':' && i+1 < len(line) && line[i+1] == '[' && !(i+3 < len(line) && line[i+3] == 'x') {
 			inName = true
@@ -196,17 +207,38 @@ func (f *NpcsP) EncodeLine(str string) []byte {
 			}
 			inBytes = true
 			i += 3 //跳过[0x
+		} else if line[i] == '[' && !inName && !inBytes { // compound character bracket, e.g. [あい]
+			if len(tempStr) > 0 {
+				data.Write(f.stringToBytes(tempStr))
+				tempStr = ""
+			}
+			inCompound = true
+			compStr = ""
+			i++
 		} else if line[i] == ']' {
 			if inBytes {
 				data.Write(utils.HexToBytes(tempStr))
 				inBytes = false
 				tempStr = ""
+			} else if inCompound {
+				if code, has := f.encodeCompound[compStr]; has {
+					data.Write(utils.Uint16ToBytesBig(code))
+				} else {
+					data.Write(f.stringToBytes(compStr))
+				}
+				inCompound = false
+				compStr = ""
+				i++
 			} else {
 				panic("Wrong end of ] symbol in:" + str)
 			}
 			i++
 		} else {
-			tempStr += string(line[i])
+			if inCompound {
+				compStr += string(line[i])
+			} else {
+				tempStr += string(line[i])
+			}
 			i++
 		}
 	}
