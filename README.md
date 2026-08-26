@@ -7,6 +7,7 @@ English localization of wetor's MagesTools tool.
 
 ## Usage guide
 * Refer to [How to use](https://github.com/ThePlayer14/MagesTools_en/blob/master/GUIDE.md)
+* Additionally, you may use the [MagesTools-GUI](https://github.com/ThePlayer14/MagesTools-GUI) project, which is a PySide6 GUI frontend that also has a "Batch Import" feature. 
 
 
 ## Usage
