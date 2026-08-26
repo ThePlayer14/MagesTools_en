@@ -1,6 +1,6 @@
 ## Specific tag format differences (sc3tools vs MagesTools)
 
-| Element | sc3tools (C#) Format | MagesTools Format |
+| Element | sc3tools Format | MagesTools Format |
 |---------|--------------|------------|
 | Line break (`0x00`) | `[linebreak]` | `[0x00]` |
 | Character name start (`0x01`) | `[name]` | `:[` |
