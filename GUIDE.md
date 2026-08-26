@@ -29,7 +29,7 @@
 |[0x110044]  |Formatting tag 9  |No            |Yes     |
 |[0x12013C]  |Formatting tag 10 |No            |Yes     |
 |[0x120174]  |Formatting tag 11 |No            |Yes     |
-|[0x00]      |Empty tag         |No            |Yes     |
+|[0x00]      |Linebreak         |No            |Yes     |
 
 * While I cannot fully clarify what are the purposes of the tags labeled as "Formatting tag", the ones starting with `0x1100` are likely used for margin adjustment.
 * When you encounter a tag starting with `0x04`, it is a color tag, which also needs to be edited with a specific way to not get stray characters in the text. 
@@ -41,7 +41,7 @@ If it's not present will not break the game but will be clumped together with th
 * Sometimes you may encounter tags like `[0x15280AA12C142100]`. These are likely the `EvaluateExpression` kind of tags, and these must always be followed by the `[0x00]` Empty tag, because otherwise the game will get stuck.
 
 ## Handling Ruby text
-* If you'd want to use the Ruby text function, you can simply just reuse the existing structure found within the script. However, if you're planning to use an LLM or an MTL / CAT tool to translate the scripts as a working draft, it is recommened to remove all instances of the Ruby text tags and contents, with the exception of the Ruby text base, and send the result for translation.
+* If you'd want to use the Ruby text function, you can simply just reuse the existing structure found within the script. However, if you're planning to use an LLM or an MTL / CAT tool to translate the scripts as a working draft, it is recommended to remove all instances of the Ruby text tags and contents, with the exception of the Ruby text base, and send the result for translation.
 * You can also try using the ruby text itself instead of the character it was used for if the translation didn't turn out well. 
 * If you only see a repeated number of middle dots `·` as ruby text, you can just remove those. 
 
